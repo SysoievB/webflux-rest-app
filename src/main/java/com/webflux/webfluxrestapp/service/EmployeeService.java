@@ -21,11 +21,15 @@ public class EmployeeService {
         return repository.getEmployeeById(id);
     }
 
-    public boolean deleteById(Employee employee) {
-        return repository.deleteEmployeeById(employee.getId());
+    public boolean deleteById(Integer id) {
+        return repository.deleteEmployeeById(id);
     }
 
     public boolean add(Employee employee) {
         return repository.addNewEmployee(employee);
+    }
+
+    public boolean update(Integer id, Employee employee) {
+        return repository.updateEmployeeById(id, employee);
     }
 }
