@@ -21,7 +21,7 @@ public class EmployeeControllerWithReactiveJava {
     private final EmployeeService service;
 
     @GetMapping
-    public Flux<Employee> getAll() {
+    Flux<Employee> getAll() {
         return Flux.fromIterable(service.list())
                 .onErrorResume(error -> {
                     log.error("Error retrieving employees: {}", error.getMessage());
@@ -30,28 +30,28 @@ public class EmployeeControllerWithReactiveJava {
     }
 
     @GetMapping("/{id}")
-    public Mono<Employee> getById(@PathVariable Integer id) {
+    Mono<Employee> getById(@PathVariable Integer id) {
         return Mono.justOrEmpty(service.getById(id))
                 .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found")))
                 .cast(Employee.class);
     }
 
     @DeleteMapping("/{id}")
-    public Mono<ResponseEntity<Object>> deleteById(@PathVariable Integer id) {
+    Mono<ResponseEntity<Object>> deleteById(@PathVariable Integer id) {
         return Mono.just(service.deleteById(id))
                 .map(deleted -> deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build())
                 .onErrorResume(error -> Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()));
     }
 
     @PostMapping
-    public Mono<ResponseEntity<Object>> save(@RequestBody Employee employee) {
+    Mono<ResponseEntity<Object>> save(@RequestBody Employee employee) {
         return Mono.just(service.add(employee))
                 .map(created -> created ? ResponseEntity.created(URI.create("/employees/" + employee.getId())).build() : ResponseEntity.badRequest().build())
                 .onErrorResume(error -> Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()));
     }
 
     @PutMapping("/{id}")
-    public Mono<ResponseEntity<Object>> updateById(@PathVariable Integer id, @RequestBody Employee employee) {
+    Mono<ResponseEntity<Object>> updateById(@PathVariable Integer id, @RequestBody Employee employee) {
         return Mono.just(service.update(id, employee))
                 .map(updated -> updated ? ResponseEntity.created(URI.create("/employees/" + employee.getId())).build() : ResponseEntity.badRequest().build())
                 .onErrorResume(error -> Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()));
